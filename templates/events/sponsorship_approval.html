@@ -1,0 +1,107 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Sponsorship Approval - HostHive{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-handshake fa-3x text-success mb-3"></i>
+                        <h2 class="fw-bold">Sponsorship Approval</h2>
+                        <p class="text-muted">Review sponsorship request and make a decision</p>
+                    </div>
+                    
+                    <!-- Sponsorship Details -->
+                    <div class="bg-light rounded p-4 mb-4">
+                        <h5 class="fw-bold mb-3">Sponsorship Information</h5>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <small class="text-muted">Company Name</small>
+                                <div class="fw-bold">{{ sponsorship.company_name }}</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted">Contact Person</small>
+                                <div class="fw-bold">{{ sponsorship.contact_person }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-sm-6">
+                                <small class="text-muted">Email</small>
+                                <div class="fw-bold">{{ sponsorship.email }}</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted">Phone</small>
+                                <div class="fw-bold">{{ sponsorship.phone }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-sm-6">
+                                <small class="text-muted">Amount</small>
+                                <div class="fw-bold text-success">${{ sponsorship.amount }}</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted">Target</small>
+                                <div class="fw-bold">
+                                    {% if sponsorship.event %}
+                                        Event: {{ sponsorship.event.name }}
+                                    {% elif sponsorship.category %}
+                                        Category: {{ sponsorship.category.name }}
+                                    {% else %}
+                                        General Sponsorship
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if sponsorship.message %}
+                        <div class="mt-3">
+                            <small class="text-muted">Message</small>
+                            <div class="fw-bold">{{ sponsorship.message }}</div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="mt-3">
+                            <small class="text-muted">Submitted</small>
+                            <div class="fw-bold">{{ sponsorship.created_at|date:"M d, Y H:i" }}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Approval Actions -->
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <form method="post" class="d-grid">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="approve">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="fas fa-check me-2"></i>Approve Sponsorship
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <form method="post" class="d-grid">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="reject">
+                                <button type="submit" class="btn btn-danger btn-lg">
+                                    <i class="fas fa-times me-2"></i>Reject Sponsorship
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{% url 'categories:list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Categories
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

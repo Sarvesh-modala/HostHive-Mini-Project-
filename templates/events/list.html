@@ -1,0 +1,123 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Events - HostHive{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="fw-bold">Upcoming Events</h1>
+            <p class="text-muted">Discover amazing events happening near you</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            {% if user.is_authenticated and user.is_client %}
+                <a href="{% url 'events:create' %}" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Create Event
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% if events %}
+        <div class="row g-4">
+            {% for event in events %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card event-card h-100 border-0 shadow-sm">
+                    {% if event.image %}
+                        <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.name }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <div class="card-img-top bg-gradient-success d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <i class="fas fa-calendar-check fa-3x text-white"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title">{{ event.name }}</h5>
+                            <div class="event-date">
+                                <div class="fw-bold">{{ event.date|date:"d" }}</div>
+                                <small>{{ event.date|date:"M" }}</small>
+                            </div>
+                        </div>
+                        
+                        <p class="card-text text-muted">{{ event.description|truncatewords:15 }}</p>
+                        
+                        <div class="mb-3">
+                            <small class="text-muted d-block">
+                                <i class="fas fa-clock me-1"></i>{{ event.time }}
+                            </small>
+                            <small class="text-muted d-block">
+                                <i class="fas fa-map-marker-alt me-1"></i>{{ event.location }}
+                            </small>
+                            <small class="text-muted d-block">
+                                <i class="fas fa-tag me-1"></i>{{ event.category.name }}
+                            </small>
+                            <small class="text-muted d-block">
+                                <i class="fas fa-users me-1"></i>{{ event.available_spots }} spots left
+                            </small>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold text-success">${{ event.price }}</span>
+                            <div>
+                                {% if event.approval_status == 'pending' %}
+                                    <span class="badge bg-warning text-dark me-2">Pending</span>
+                                {% elif event.approval_status == 'rejected' %}
+                                    <span class="badge bg-danger me-2">Rejected</span>
+                                {% endif %}
+                                <a href="{% url 'events:detail' event.pk %}" class="btn btn-primary btn-sm">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if events.has_other_pages %}
+        <nav class="mt-5">
+            <ul class="pagination justify-content-center">
+                {% if events.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ events.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
+                
+                {% for num in events.paginator.page_range %}
+                    {% if events.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if events.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ events.next_page_number }}">Next</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
+            <h3 class="text-muted">No Events Yet</h3>
+            <p class="text-muted">Be the first to create an amazing event!</p>
+            {% if user.is_authenticated and user.is_client %}
+                <a href="{% url 'events:create' %}" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Create First Event
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

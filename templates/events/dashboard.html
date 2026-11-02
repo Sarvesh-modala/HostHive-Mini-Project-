@@ -1,0 +1,203 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - HostHive{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="fw-bold">Dashboard</h1>
+            <p class="text-muted">Welcome back, {{ user.get_full_name|default:user.username }}!</p>
+        </div>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-5">
+        {% if user.is_host %}
+            <div class="col-md-3">
+                <div class="card bg-primary text-white border-0">
+                    <div class="card-body text-center">
+                        <i class="fas fa-folder fa-2x mb-2"></i>
+                        <h3 class="fw-bold">{{ categories.count }}</h3>
+                        <small>My Categories</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white border-0">
+                    <div class="card-body text-center">
+                        <i class="fas fa-clock fa-2x mb-2"></i>
+                        <h3 class="fw-bold">{{ pending_events }}</h3>
+                        <small>Pending Events</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white border-0">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user-check fa-2x mb-2"></i>
+                        <h3 class="fw-bold">{{ pending_bg_checks }}</h3>
+                        <small>Background Checks</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white border-0">
+                    <div class="card-body text-center">
+                        <i class="fas fa-dollar-sign fa-2x mb-2"></i>
+                        <h3 class="fw-bold">${{ total_revenue }}</h3>
+                        <small>Total Sponsorships</small>
+                    </div>
+                </div>
+            </div>
+        {% elif user.is_client %}
+            <div class="col-md-3">
+                <div class="card bg-primary text-white border-0">
+                    <div class="card-body text-center">
+                        <i class="fas fa-calendar fa-2x mb-2"></i>
+                        <h3 class="fw-bold">{{ my_events.count }}</h3>
+                        <small>My Events</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white border-0">
+                    <div class="card-body text-center">
+                        <i class="fas fa-clock fa-2x mb-2"></i>
+                        <h3 class="fw-bold">{{ pending_events }}</h3>
+                        <small>Pending Approval</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white border-0">
+                    <div class="card-body text-center">
+                        <i class="fas fa-ticket-alt fa-2x mb-2"></i>
+                        <h3 class="fw-bold">{{ my_tickets.count }}</h3>
+                        <small>My Tickets</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white border-0">
+                    <div class="card-body text-center">
+                        <i class="fas fa-users fa-2x mb-2"></i>
+                        <h3 class="fw-bold">{{ total_bookings }}</h3>
+                        <small>Total Bookings</small>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="row">
+        <!-- Quick Actions -->
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="fw-bold mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% if user.is_host %}
+                            <div class="col-md-6">
+                                <a href="{% url 'categories:create' %}" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-plus me-2"></i>Create Category
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{% url 'events:event_approval' %}" class="btn btn-outline-warning w-100">
+                                    <i class="fas fa-clipboard-check me-2"></i>Approve Events
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{% url 'events:background_check_approval' %}" class="btn btn-outline-info w-100">
+                                    <i class="fas fa-user-check me-2"></i>Background Checks
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{% url 'events:sponsorship_approval' %}" class="btn btn-outline-success w-100">
+                                    <i class="fas fa-handshake me-2"></i>Approve Sponsorships
+                                </a>
+                            </div>
+                        {% elif user.is_client %}
+                            <div class="col-md-6">
+                                <a href="{% url 'events:create' %}" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-plus me-2"></i>Create Event
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{% url 'events:sponsorship_create' %}" class="btn btn-outline-success w-100">
+                                    <i class="fas fa-handshake me-2"></i>Submit Sponsorship
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{% url 'events:list' %}" class="btn btn-outline-info w-100">
+                                    <i class="fas fa-calendar me-2"></i>Browse Events
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{% url 'events:background_check_history' %}" class="btn btn-outline-warning w-100">
+                                    <i class="fas fa-history me-2"></i>Check History
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Sponsorships -->
+            {% if recent_sponsorships %}
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-header bg-white">
+                    <h5 class="fw-bold mb-0">Recent Sponsorships</h5>
+                </div>
+                <div class="card-body">
+                    {% for sponsorship in recent_sponsorships %}
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <div>
+                            <div class="fw-bold">{{ sponsorship.company_name }}</div>
+                            <small class="text-muted">{{ sponsorship.created_at|date:"M d, Y" }}</small>
+                        </div>
+                        <span class="badge bg-success">${{ sponsorship.amount }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Notifications -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">Notifications</h5>
+                    <a href="{% url 'events:notifications' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if notifications %}
+                        {% for notification in notifications %}
+                        <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
+                            <div class="bg-primary text-white rounded-circle p-2 me-3">
+                                <i class="fas fa-bell fa-sm"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold">{{ notification.title }}</div>
+                                <small class="text-muted">{{ notification.message|truncatewords:10 }}</small>
+                                <div class="text-muted small">{{ notification.created_at|timesince }} ago</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-bell-slash fa-2x mb-2"></i>
+                            <div>No new notifications</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

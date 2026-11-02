@@ -1,0 +1,107 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Categories - HostHive{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="fw-bold">Event Categories</h1>
+            <p class="text-muted">Discover amazing event categories created by our hosts</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            {% if user.is_authenticated and user.is_host %}
+                <a href="{% url 'categories:create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Create Category
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% if categories %}
+        <div class="row g-4">
+            {% for category in categories %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card category-card h-100 border-0 shadow-sm">
+                    {% if category.background_video %}
+                        <video class="card-img-top video-background" autoplay muted loop>
+                            <source src="{{ category.background_video.url }}" type="video/mp4">
+                        </video>
+                        <div class="card-img-overlay d-flex flex-column justify-content-end">
+                            <h5 class="card-title text-white fw-bold">{{ category.name }}</h5>
+                            <p class="card-text text-white">{{ category.description|truncatewords:15 }}</p>
+                            <div class="mt-auto">
+                                <a href="{% url 'categories:detail' category.pk %}" class="btn btn-light">
+                                    Explore <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        {% if category.image %}
+                            <img src="{{ category.image.url }}" class="card-img-top" alt="{{ category.name }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-gradient-primary d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="fas fa-calendar-alt fa-3x text-white"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ category.name }}</h5>
+                            <p class="card-text text-muted">{{ category.description|truncatewords:15 }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">by {{ category.host.username }}</small>
+                                <a href="{% url 'categories:detail' category.pk %}" class="btn btn-primary btn-sm">
+                                    Explore
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if categories.has_other_pages %}
+        <nav class="mt-5">
+            <ul class="pagination justify-content-center">
+                {% if categories.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ categories.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
+                
+                {% for num in categories.paginator.page_range %}
+                    {% if categories.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if categories.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ categories.next_page_number }}">Next</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-folder-open fa-4x text-muted mb-3"></i>
+            <h3 class="text-muted">No Categories Yet</h3>
+            <p class="text-muted">Be the first to create an amazing event category!</p>
+            {% if user.is_authenticated and user.is_host %}
+                <a href="{% url 'categories:create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Create First Category
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

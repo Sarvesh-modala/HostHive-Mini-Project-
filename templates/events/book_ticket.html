@@ -1,0 +1,71 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Book Ticket - {{ event.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <!-- Event Summary -->
+                    <div class="bg-light rounded p-4 mb-4">
+                        <h4 class="fw-bold mb-3">{{ event.name }}</h4>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <small class="text-muted">Date & Time</small>
+                                <div class="fw-bold">{{ event.date|date:"F d, Y" }} at {{ event.time }}</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted">Location</small>
+                                <div class="fw-bold">{{ event.location }}</div>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-sm-6">
+                                <small class="text-muted">Price</small>
+                                <div class="fw-bold text-success">${{ event.price }}</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted">Available Spots</small>
+                                <div class="fw-bold">{{ event.available_spots }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mb-4">
+                        <i class="fas fa-ticket-alt fa-3x text-primary mb-3"></i>
+                        <h2 class="fw-bold">Book Your Ticket</h2>
+                        <p class="text-muted">Please provide your details for the ticket</p>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Payment Method:</strong> Cash payment will be collected at the event venue.
+                        </div>
+                        
+                        <div class="alert alert-success">
+                            <i class="fas fa-shield-check me-2"></i>
+                            <strong>Verification Complete:</strong> Your account has passed the background check for ticket booking.
+                        </div>
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-ticket-alt me-2"></i>Book Ticket
+                            </button>
+                            <a href="{% url 'events:detail' event.pk %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Event
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
